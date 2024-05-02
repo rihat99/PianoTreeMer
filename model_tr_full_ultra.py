@@ -99,8 +99,8 @@ class VAETR(nn.Module):
             # d_model=self.note_embed_hid_size + self.note_emb_size, 
             d_model=self.note_emb_size, 
             nhead=4, batch_first=True, 
-            # dim_feedforward=self.note_embed_hid_size + self.note_emb_size
-            dim_feedforward=self.note_emb_size
+            dim_feedforward=self.note_embed_hid_size + self.note_emb_size
+            # dim_feedforward=self.note_emb_size
         )
         self.encoder_layer_time = TransformerEncoderLayer(d_model=self.enc_time_hid_size, nhead=8, batch_first=True, dim_feedforward=self.enc_time_hid_size)
         self.enc_notes_tr = TransformerEncoder(self.encoder_layer_note, num_layers=num_enc_note_layers)
@@ -152,11 +152,11 @@ class VAETR(nn.Module):
         # token_time = self.enc_time_token.unsqueeze(0).repeat(x.size(0),1,1).to(self.device)
         # x = torch.cat([x, token_time], dim = 1)
 
-        mask_att = (torch.triu(torch.ones(32, 32)) == 1).transpose(0, 1)
-        mask_att = mask_att.float().masked_fill(mask_att == 0, float('-inf')).masked_fill(mask_att == 1, float(0))
-        mask_att = mask_att.to(self.device)
+        # mask_att = (torch.triu(torch.ones(32, 32)) == 1).transpose(0, 1)
+        # mask_att = mask_att.float().masked_fill(mask_att == 0, float('-inf')).masked_fill(mask_att == 1, float(0))
+        # mask_att = mask_att.to(self.device)
 
-        x = self.enc_time_tr(x, mask=mask_att)
+        x = self.enc_time_tr(x)
         # x = x[:, [0, -1], :].view(x.size(0), -1)
         # x = x[:, -2:, :].view(x.size(0), -1)
         x = self.linear_enc_time(x)
